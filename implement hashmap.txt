@@ -1,0 +1,123 @@
+class MyHashMap {
+
+    /** Initialize your data structure here. */
+    int size;
+    class HashNode
+    {
+        int val;
+        int key;
+       public HashNode(int key,int val )
+       {
+           this.val=val;
+           this.key=key;
+       }
+    }
+    LinkedList<HashNode>buckets[];
+    public MyHashMap() {
+        
+        buckets=new LinkedList[4]; // N bucket size
+        for(int i=0;i<buckets.length;i++)
+        {
+            buckets[i]=new LinkedList<>();
+        }
+    }
+    
+    /** value will always be non-negative. */
+    public void put(int key, int value) {
+        int bi=hs(key); //hash code
+        int di=getIndexWithinBuckets(key,bi);
+        if(di==-1)
+            //insert
+        {
+            HashNode node=new HashNode(key,value);
+            buckets[bi].add(node);
+            size++;
+        }
+        else
+        {
+            HashNode n=buckets[bi].get(di);
+            n.val=value;
+        }
+     double lambda=size*1.0/buckets.length;
+        if(lambda>2.0)
+            rehash();
+            
+        
+    }
+    public void rehash()
+    {
+        int n=buckets.length;
+        LinkedList<HashNode> list[]=buckets;
+         buckets=new LinkedList[n*2]; // N bucket size
+        for(int i=0;i<buckets.length;i++)
+        {
+            buckets[i]=new LinkedList<>();
+        }
+        
+        size=0;
+        for(int i=0;i<list.length;i++)
+        {
+            for(HashNode h:list[i])
+            {
+               put(h.key,h.val);
+            }
+        }
+    
+    }
+    public int hs(int key1)
+    {  return Math.abs(Integer.hashCode(key1)) % buckets.length;
+    }
+    
+    public int getIndexWithinBuckets(int key,int bi)
+    {
+        int di=0;
+        int i=0;
+        for(HashNode h:buckets[bi])
+        {
+            if(h.key==key)
+            {
+              return i;
+            
+            }
+            i++;
+        }
+        return -1;
+    }
+    
+    /** Returns the value to which the specified key is mapped, or -1 if this map contains no mapping for the key */
+    public int get(int key) {
+        int bi=hs(key);
+         int di=getIndexWithinBuckets(key,bi);
+        if(di==-1)
+            return -1;
+        else
+        {
+             HashNode n=buckets[bi].get(di);
+            return n.val;
+         }
+        
+        
+    }
+    
+    /** Removes the mapping of the specified value key if this map contains a mapping for the key */
+    public void remove(int key) {
+         int bi=hs(key);
+         int di=getIndexWithinBuckets(key,bi);
+        if(di==-1)
+            return;
+        else
+        {
+             HashNode n=buckets[bi].remove(di);
+           size--;
+        }
+        
+    }
+}
+
+/**
+ * Your MyHashMap object will be instantiated and called as such:
+ * MyHashMap obj = new MyHashMap();
+ * obj.put(key,value);
+ * int param_2 = obj.get(key);
+ * obj.remove(key);
+ */
